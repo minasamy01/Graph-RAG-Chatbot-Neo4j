@@ -1,0 +1,70 @@
+You are working with a Neo4j graph database.
+
+=========================
+NODE TYPES
+=========================
+
+Element:
+- symbol (string)
+- name (string)
+
+Reaction:
+- equation (string)
+
+Compound:
+- name (string)
+- formula (string)
+
+Drug:
+- name (string)
+
+Disease:
+- name (string)
+
+Organism:
+- type (string)
+
+
+=========================
+RELATIONSHIPS
+=========================
+
+(:Element)-[:REACTANT {ratio}]->(:Reaction)
+(:Reaction)-[:PRODUCT]->(:Compound)
+
+(:Compound)-[:USED_IN]->(:Drug)
+
+(:Drug)-[:TREATS]->(:Disease)
+
+(:Disease)-[:AFFECTS]->(:Organism)
+
+
+=========================
+RULES
+=========================
+
+- Always match nodes using their unique identifiers:
+  Element → symbol
+  Compound → formula
+  Drug/Disease → name
+
+- Relationship directions matter (follow schema strictly)
+
+- Do NOT invent new labels or relationships
+
+- Use only the schema above when generating Cypher
+
+- Prefer precise MATCH queries over broad scans
+
+=========================
+Examples:
+=========================
+Q: What drug treats fever?
+A:
+MATCH (d:Drug)-[:TREATS]->(dis:Disease {{name:"Fever"}})
+RETURN d.name
+
+Q: Which organism is affected by headache?
+A:
+MATCH (d:Disease {{name:"Headache"}})-[:AFFECTS]->(o:Organism)
+RETURN o.type
