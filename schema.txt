@@ -3,68 +3,51 @@ You are working with a Neo4j graph database.
 =========================
 NODE TYPES
 =========================
-
-Element:
-- symbol (string)
-- name (string)
-
-Reaction:
-- equation (string)
-
-Compound:
-- name (string)
-- formula (string)
-
-Drug:
-- name (string)
-
-Disease:
-- name (string)
-
-Organism:
-- type (string)
-
+Element: (symbol, name)
+Reaction: (equation)
+Compound: (name, formula)
+Drug: (name)
+Disease: (name)
+Organism: (type)
 
 =========================
-RELATIONSHIPS
+RELATIONSHIPS (STRICT DIRECTION)
 =========================
-
 (:Element)-[:REACTANT {ratio}]->(:Reaction)
 (:Reaction)-[:PRODUCT]->(:Compound)
-
 (:Compound)-[:USED_IN]->(:Drug)
-
 (:Drug)-[:TREATS]->(:Disease)
-
 (:Disease)-[:AFFECTS]->(:Organism)
 
+=========================
+STRICT RULES
+=========================
+1. DIRECTION MATTERS: Always follow the arrow direction above.
+2. CASE INSENSITIVITY: Always use toLower() for string comparisons.
+   Example: WHERE toLower(d.name) = toLower("Fever")
+3. IDENTIFIERS:
+   - Element: symbol
+   - Compound: formula
+   - Others: name / type
+4. NO MARKDOWN: Return only the raw Cypher query text. No ```.
+5. NO INVENTIONS: Use only labels provided above.
 
 =========================
-RULES
-=========================
-
-- Always match nodes using their unique identifiers:
-  Element → symbol
-  Compound → formula
-  Drug/Disease → name
-
-- Relationship directions matter (follow schema strictly)
-
-- Do NOT invent new labels or relationships
-
-- Use only the schema above when generating Cypher
-
-- Prefer precise MATCH queries over broad scans
-
-=========================
-Examples:
+EXAMPLES:
 =========================
 Q: What drug treats fever?
 A:
-MATCH (d:Drug)-[:TREATS]->(dis:Disease {{name:"Fever"}})
+MATCH (d:Drug)-[:TREATS]->(dis:Disease)
+WHERE toLower(dis.name) = toLower("Fever")
 RETURN d.name
 
 Q: Which organism is affected by headache?
 A:
-MATCH (d:Disease {{name:"Headache"}})-[:AFFECTS]->(o:Organism)
+MATCH (d:Disease)-[:AFFECTS]->(o:Organism)
+WHERE toLower(d.name) = toLower("Headache")
 RETURN o.type
+
+Q: What is the product of C + 4H -> CH4?
+A:
+MATCH (r:Reaction {equation: "C + 4H -> CH4"})-[:PRODUCT]->(c:Compound)
+RETURN c.name

@@ -38,15 +38,16 @@ if prompt := st.chat_input("Ask your graph..."):
     with st.spinner("Thinking..."):
         answer, cypher, results = chat(prompt, debug=True)
 
-    # show assistant answer
-    with st.chat_message("assistant"):
-        st.markdown(answer)
-
-        # 🔥 Debug info
-        with st.expander("🧾 Generated Cypher"):
+    # تقسيم الشاشة لعرض الـ Debug جنباً إلى جنب مع الإجابة
+    col1, col2 = st.columns([1, 1])
+    
+    with col1:
+        with st.expander("🛠 Developer Tools", expanded=True):
+            st.subheader("📌 Generated Cypher")
             st.code(cypher, language="cypher")
+            st.subheader("📊 Database Results")
+            st.json(results)
 
-        with st.expander("📊 Raw Results"):
-            st.write(results)
-
-    st.session_state.messages.append({"role": "assistant", "content": answer})
+    with col2:
+        with st.chat_message("assistant"):
+            st.success(answer)
